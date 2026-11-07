@@ -1,0 +1,1083 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>小书包 Little Schoolbag</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="小书包">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#EDF5F0">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Noto+Serif+SC:wght@600;700&display=swap">
+<style>
+/* Layout: one-hand phone app — sticky header, single scrolling stage, fixed bottom tab bar.
+   Motif: the red 田字格 practice grid from Chinese exercise books frames every character. */
+:root{
+  --paper:#EDF5F0;
+  --card:#FFFFFF;
+  --ink:#1B3631;
+  --soft:#58756D;
+  --line:#CFE0D7;
+  --seal:#D2452F;
+  --grid:rgba(210,69,47,.42);
+  --sun:#F2B035;
+  --sun-ink:#3A2A05;
+  --jade:#2A8668;
+  --jade-soft:#D9EEE5;
+  --t1:#2F74C8; --t2:#23935A; --t3:#C27A10; --t4:#D2452F;
+  --shadow:0 2px 0 rgba(27,54,49,.10);
+  --font-ui:"Baloo 2","Nunito","Trebuchet MS",system-ui,sans-serif;
+  --font-py:"Roboto","Noto Sans","Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --font-han:"KaiTi","STKaiti","Kaiti SC","Noto Serif SC","Songti SC","SimSun",serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1D19; --card:#172925; --ink:#E3F0EA; --soft:#97B3AA; --line:#2A423B;
+    --seal:#F07A62; --grid:rgba(240,122,98,.45); --sun:#F5BE52; --sun-ink:#2B1E02;
+    --jade:#5CC59F; --jade-soft:#1E3A32;
+    --t1:#79B0F2; --t2:#5ACD8E; --t3:#EDB04A; --t4:#F07A62;
+    --shadow:0 2px 0 rgba(0,0,0,.35);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1D19; --card:#172925; --ink:#E3F0EA; --soft:#97B3AA; --line:#2A423B;
+  --seal:#F07A62; --grid:rgba(240,122,98,.45); --sun:#F5BE52; --sun-ink:#2B1E02;
+  --jade:#5CC59F; --jade-soft:#1E3A32;
+  --t1:#79B0F2; --t2:#5ACD8E; --t3:#EDB04A; --t4:#F07A62;
+  --shadow:0 2px 0 rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+.keyin{font:inherit;font-size:16px;width:100%;padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.keyin:focus{outline:3px solid var(--sun);outline-offset:1px}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-ui);font-size:17px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,.chip:focus-visible,label.btn:focus-within{outline:3px solid var(--sun);outline-offset:2px}
+.han{font-family:var(--font-han);font-weight:700}
+
+/* Header */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px 8px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.seal{width:40px;height:40px;border-radius:8px;background:var(--seal);color:#fff;display:grid;place-items:center;font-family:var(--font-han);font-weight:700;font-size:22px;flex:none}
+.brand b{display:block;font-size:20px;line-height:1.1;font-weight:800}
+.brand small{display:block;color:var(--soft);font-size:13px;line-height:1.2}
+.stars{background:var(--sun);color:var(--sun-ink);border-radius:999px;padding:4px 12px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stars.pop{animation:pop .45s ease}
+@keyframes pop{40%{transform:scale(1.25)}}
+
+main{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:16px calc(104px + env(safe-area-inset-bottom,0px))}
+h2{font-size:26px;line-height:1.15;margin:0;font-weight:800;text-wrap:balance}
+.sub{color:var(--soft);margin:2px 0 0;font-size:15px}
+.view{display:flex;flex-direction:column;gap:16px}
+.note{background:var(--jade-soft);border-radius:12px;padding:10px 14px;font-size:15px}
+
+/* Category chips */
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-inline:-4px;padding-inline:4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:2px solid var(--line);background:var(--card);border-radius:999px;padding:4px 14px;display:flex;align-items:baseline;gap:6px;font-weight:700}
+.chip .han{font-size:18px}
+.chip small{color:var(--soft);font-weight:600;font-size:13px}
+.chip[aria-pressed="true"]{background:var(--jade);border-color:var(--jade);color:var(--card)}
+.chip[aria-pressed="true"] small{color:inherit;opacity:.85}
+
+/* Word cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
+.word{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:10px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:var(--shadow);min-width:0}
+.word:active{transform:translateY(2px);box-shadow:none}
+.word .pic{font-size:36px;line-height:1.1}
+.word .han{font-size:28px;line-height:1.2}
+.word .py{font-size:15px;font-weight:700;color:var(--soft)}
+
+/* 田字格 practice grid */
+.tzg-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.tzg{position:relative;width:var(--s,120px);height:var(--s,120px);border:2px solid var(--seal);display:grid;place-items:center;background:var(--card);flex:none}
+.tzg::before,.tzg::after{content:"";position:absolute;pointer-events:none}
+.tzg::before{left:50%;top:0;bottom:0;border-left:1.5px dashed var(--grid)}
+.tzg::after{top:50%;left:0;right:0;border-top:1.5px dashed var(--grid)}
+.tzg span{position:relative;z-index:1;font-family:var(--font-han);font-weight:700;font-size:calc(var(--s,120px)*.72);line-height:1}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:14px;padding:10px 18px;font-weight:800;font-size:17px;background:var(--card);border:2px solid var(--line);box-shadow:var(--shadow);min-height:48px}
+.btn.primary{background:var(--sun);border-color:var(--sun);color:var(--sun-ink)}
+.btn.jade{background:var(--jade);border-color:var(--jade);color:var(--card)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn:active:not(:disabled){transform:translateY(2px);box-shadow:none}
+.say{width:52px;height:52px;border-radius:50%;border:none;background:var(--jade);color:var(--card);display:grid;place-items:center;flex:none;box-shadow:var(--shadow)}
+.say.sm{width:40px;height:40px}
+.say svg{width:55%;height:55%}
+.say.speaking{animation:pulse 1s ease infinite}
+@keyframes pulse{50%{transform:scale(1.08)}}
+
+/* Games */
+.stage{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.stage .big{font-size:64px;line-height:1}
+.prompt{font-weight:700;color:var(--soft)}
+.tones{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%}
+.tone{background:var(--card);border:3px solid var(--line);border-radius:16px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:0;color:var(--tc);min-height:96px}
+.tone b{font-size:30px;font-weight:800;line-height:1.2}
+.tone svg{width:44px;height:30px}
+.tone small{color:var(--soft);font-size:13px;font-weight:600}
+.picks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%}
+.pick{background:var(--card);border:3px solid var(--line);border-radius:18px;font-size:52px;padding:10px 0;line-height:1.2}
+.right{border-color:var(--t2)!important;background:var(--jade-soft)!important}
+.wrong{border-color:var(--seal)!important;animation:shake .35s ease}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.cheer{font-weight:800;color:var(--t2);min-height:1.5em}
+
+/* Book */
+.capture{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.photo{border-radius:12px;overflow:hidden;background:var(--jade-soft);aspect-ratio:4/3;max-width:100%;display:grid;place-items:center;color:var(--soft);text-align:center;padding:12px}
+.photo img{width:100%;height:100%;object-fit:contain}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row > *{flex:1 1 140px}
+label.btn{cursor:pointer;position:relative}
+label.btn input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+label.btn.off{opacity:.45;pointer-events:none}
+.status{font-size:15px;color:var(--soft);min-height:1.4em}
+.status.err{color:var(--seal);font-weight:700}
+.pagehead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.tag{font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--seal)}
+.lines{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:12px;display:flex;flex-direction:column;gap:12px}
+.line{display:flex;align-items:center;gap:10px}
+.toggles{display:flex;gap:8px;flex-wrap:wrap}
+.toggles .btn{min-height:40px;padding:6px 12px;font-size:15px}
+.line-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.line-en{font-size:15px;line-height:1.35;font-weight:600;color:var(--soft);padding-left:2px}
+.lines.noen .line-en{display:none}
+.line-tiles{display:flex;flex-wrap:wrap;gap:4px;flex:1;min-width:0}
+.tile{border:none;background:none;padding:2px 1px;border-radius:8px;display:flex;flex-direction:column;align-items:center;min-width:40px}
+.tile .py{font-size:13px;font-weight:700;color:var(--soft);min-height:1.2em;line-height:1.2}
+.tile .tzg{--s:40px}
+.tile:hover .tzg,.tile.sel .tzg{background:var(--sun);border-color:var(--sun)}
+.tile.sel .tzg span{color:var(--sun-ink)}
+.punct{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;font-family:var(--font-han);font-size:24px;width:18px;height:44px;color:var(--soft)}
+.lines.nopy .py{display:none}
+.mine-empty{color:var(--soft)}
+
+/* Sheet */
+.scrim{position:fixed;inset:0;background:rgba(10,22,19,.5);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--paper);width:100%;max-width:640px;max-height:90%;overflow-y:auto;border-radius:24px 24px 0 0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:12px calc(24px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px;animation:up .25s ease}
+@keyframes up{from{transform:translateY(40px);opacity:.5}}
+.sheet-top{display:flex;justify-content:space-between;align-items:center}
+.x{border:none;background:var(--card);border-radius:50%;width:44px;height:44px;font-size:24px;line-height:1}
+.hero{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.hero .pic{font-size:56px;line-height:1}
+.hero .pyl{font-size:34px;font-weight:800;line-height:1.1}
+.hero .en{font-size:20px;font-weight:700}
+.tip{background:var(--card);border-radius:14px;padding:10px 14px;border:2px dashed var(--line)}
+.sec{font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--soft);margin:4px 0 -6px}
+.ex{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:10px 12px;display:flex;align-items:center;gap:12px}
+.ex .pic{font-size:34px;flex:none;width:44px;text-align:center}
+.ex .txt{flex:1;min-width:0}
+.ex .zh{font-family:var(--font-han);font-weight:700;font-size:24px;line-height:1.3}
+.ex .p{font-weight:700;color:var(--soft);font-size:15px}
+.ex .e{font-size:15px}
+.navrow{display:flex;justify-content:space-between;gap:10px}
+.common{background:var(--card);border:3px solid var(--sun);border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.common .top{display:flex;align-items:center;gap:12px}
+.common .pic{font-size:48px;line-height:1;flex:none}
+.common .txt{flex:1;min-width:0}
+.common .zh{font-family:var(--font-han);font-weight:700;font-size:40px;line-height:1.15}
+.common .zh .hit{color:var(--seal)}
+.common .p{font-weight:800;font-size:20px}
+.common .e{font-weight:700;font-size:18px}
+.common .how{background:var(--jade-soft);border-radius:12px;padding:8px 12px;font-size:16px}
+.common .ex{border:none;padding:0;background:none}
+.spinner{width:44px;height:44px;border-radius:50%;border:5px solid var(--line);border-top-color:var(--seal);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Tab bar */
+nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);
+  padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px));
+  padding-block:6px calc(6px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px}
+nav button{border:none;background:none;border-radius:14px;padding:4px 0;display:flex;flex-direction:column;align-items:center;color:var(--soft)}
+nav .han{font-size:24px;line-height:1.2}
+nav small{font-size:12px;font-weight:700}
+nav button[aria-current="page"]{background:var(--jade-soft);color:var(--jade)}
+
+/* Pinyin needs a face with every tone-marked vowel (ā ē ī ō ū ǖ). */
+.py,.pyl,.tone b,.ex .p,.common .p{font-family:var(--font-py)}
+/* Translate */
+.dir{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px}
+.dir .lang{background:var(--jade-soft);border-radius:12px;padding:8px 6px;text-align:center;font-weight:800}
+.swap{width:48px;height:48px;border-radius:50%;border:2px solid var(--line);background:var(--card);font-size:22px;line-height:1}
+.trin{font:inherit;font-size:20px;width:100%;min-height:110px;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:var(--paper);color:var(--ink);resize:vertical}
+.trin.zh{font-family:var(--font-han)}
+.trin:focus{outline:3px solid var(--sun);outline-offset:1px}
+.trout{display:flex;flex-direction:column;gap:12px}
+.bigen{font-size:20px;font-weight:700}
+/* Select & copy */
+.tile,.punct{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.tile.picked .tzg{background:var(--jade);border-color:var(--jade)}
+.tile.picked .tzg span{color:var(--card)}
+.punct.picked{color:var(--jade);font-weight:700}
+.selbar{position:fixed;left:0;right:0;bottom:calc(64px + env(safe-area-inset-bottom,0px));z-index:7;background:var(--ink);color:var(--paper);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px;
+  display:flex;flex-direction:column;gap:8px;box-shadow:0 -4px 16px rgba(0,0,0,.18)}
+.seltxt{display:flex;align-items:baseline;gap:10px;min-width:0}
+.seltxt .han{font-size:22px;line-height:1.3;max-height:2.7em;overflow-y:auto;flex:1;min-width:0;overflow-wrap:anywhere;-webkit-user-select:text;user-select:text}
+.seltxt small{flex:none;opacity:.8;font-weight:700}
+.selbtns{display:flex;gap:8px}
+.selbtns .btn{flex:1;min-height:44px;padding:6px 10px}
+.selbtns #selCancel{flex:none;width:48px}
+.selbtns .btn:not(.primary){background:transparent;color:var(--paper);border:2px solid currentColor;box-shadow:none}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(180px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--jade);color:var(--card);
+  padding:8px 16px;border-radius:999px;font-weight:800;max-width:calc(100% - 32px);text-align:center}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="seal" aria-hidden="true">书</div>
+    <div><b>小书包</b><small>Little Schoolbag · Chinese for little learners</small></div>
+  </div>
+  <div class="stars" id="stars" aria-label="Stars earned">★ 0</div>
+</header>
+
+<main>
+  <div class="note" id="voiceNote" hidden></div>
+
+  <!-- WORDS -->
+  <section class="view" id="v-words">
+    <div><h2>Picture words</h2><p class="sub">Tap a picture to hear it in Chinese.</p></div>
+    <div class="chips" id="cats" role="toolbar" aria-label="Word groups"></div>
+    <div class="grid" id="wordGrid"></div>
+  </section>
+
+  <!-- TONES -->
+  <section class="view" id="v-tones" hidden>
+    <div><h2>Tone ears</h2><p class="sub">Listen, then pick how the voice moves.</p></div>
+    <div class="stage" id="toneStage"></div>
+  </section>
+
+  <!-- MATCH -->
+  <section class="view" id="v-match" hidden>
+    <div><h2>Read and match</h2><p class="sub">Which picture goes with this character?</p></div>
+    <div class="stage" id="matchStage"></div>
+  </section>
+
+  <!-- BOOK -->
+  <section class="view" id="v-book" hidden>
+    <div><h2>My textbook</h2><p class="sub">Take a photo of a page, then tap any character to learn it. Press and hold a character to select and copy.</p></div>
+    <div class="capture">
+      <div class="photo" id="photo">
+        <div>No photo yet.<br>Hold the book flat in good light.</div>
+      </div>
+      <div class="row">
+        <label class="btn jade" id="camLbl">Take photo<input type="file" id="cam" accept="image/*" capture="environment"></label>
+        <label class="btn" id="pickLbl">Choose photo<input type="file" id="pick" accept="image/*"></label>
+      </div>
+      <button class="btn primary" id="readBtn" disabled>Read my page</button>
+      <div class="row" id="stopRow" hidden><button class="btn" id="stopBtn">Stop</button></div>
+      <div class="status" id="bookStatus" aria-live="polite">Connecting to Claude…</div>
+    </div>
+    <div class="pagehead">
+      <span class="tag" id="pageTag">Example page</span>
+      <div class="toggles"><button class="btn" id="enToggle" aria-pressed="true">English on</button><button class="btn" id="pyToggle" aria-pressed="true">Pinyin on</button></div>
+    </div>
+    <div class="lines" id="lines"></div>
+    <div class="capture" id="keyBox" hidden>
+      <div>
+        <b>Claude API key (for grown-ups)</b>
+        <p class="sub">Reading photos and explaining characters uses Claude. Create a key at console.anthropic.com under API keys and paste it here. It is saved only on this phone. Each photo or character costs a small amount on your Anthropic account.</p>
+      </div>
+      <input class="keyin" id="keyIn" type="password" placeholder="sk-ant-…" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Claude API key">
+      <div class="row">
+        <button class="btn jade" id="keySave">Save key</button>
+        <button class="btn" id="keyClear">Remove key</button>
+      </div>
+      <div class="status" id="keyStatus" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- TRANSLATE -->
+  <section class="view" id="v-translate" hidden>
+    <div><h2>Translate</h2><p class="sub">Type a word or sentence. Tap any Chinese character in the answer to learn it, or press and hold to copy.</p></div>
+    <div class="capture">
+      <div class="dir">
+        <div class="lang" id="fromLang">English</div>
+        <button class="swap" id="swapBtn" aria-label="Swap languages">⇄</button>
+        <div class="lang" id="toLang">中文 Chinese</div>
+      </div>
+      <textarea class="trin" id="trIn" placeholder="e.g. I love my cat" aria-label="Text to translate"></textarea>
+      <div class="row"><button class="btn primary" id="trBtn">Translate</button><button class="btn" id="trClear">Clear</button></div>
+      <div class="status" id="trStatus" aria-live="polite"></div>
+    </div>
+    <div class="trout" id="trOut" hidden></div>
+  </section>
+</main>
+
+<nav aria-label="Sections">
+  <button data-view="words" aria-current="page"><span class="han">字词</span><small>Words</small></button>
+  <button data-view="tones"><span class="han">声调</span><small>Tones</small></button>
+  <button data-view="match"><span class="han">认字</span><small>Match</small></button>
+  <button data-view="book"><span class="han">课本</span><small>My book</small></button>
+  <button data-view="translate"><span class="han">翻译</span><small>Translate</small></button>
+</nav>
+
+<div class="selbar" id="selBar" hidden>
+  <div class="seltxt"><span class="han" id="selText"></span><small id="selCount"></small></div>
+  <div class="selbtns">
+    <button class="btn" id="selAll">Select all</button>
+    <button class="btn primary" id="selCopy">Copy</button>
+    <button class="btn" id="selCancel" aria-label="Cancel selection">✕</button>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<div class="scrim" id="scrim" hidden>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Word details"></div>
+</div>
+
+<script>
+/* ---------- helpers ---------- */
+function h(tag, props, ...kids){
+  const el = document.createElement(tag);
+  for (const [k,v] of Object.entries(props||{})){
+    if (v==null || v===false) continue;
+    if (k==='class') el.className = v;
+    else if (k==='style') el.setAttribute('style', v);
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k==='svg') el.innerHTML = v; // trusted static markup only
+    else el.setAttribute(k, v===true ? '' : v);
+  }
+  for (const k of kids.flat()){
+    if (k==null || k===false) continue;
+    el.append(k instanceof Node ? k : document.createTextNode(String(k)));
+  }
+  return el;
+}
+const $ = id => document.getElementById(id);
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem('xsb.'+k); return v==null ? d : JSON.parse(v); }catch{ return d; } },
+  set(k, v){ try{ localStorage.setItem('xsb.'+k, JSON.stringify(v)); }catch{} }
+};
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const isHan = c => /[㐀-鿿豈-﫿]/.test(c);
+const SPEAKER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
+
+/* ---------- speech ---------- */
+const ANDROID = !!window.Android;
+// WEB: the stand-alone web app (iPhone home screen). Not inside Claude, not the Android app.
+const WEB = !ANDROID; // this copy only ever runs as the Android app or the stand-alone web app, never inside Claude
+const keyStore = ANDROID
+  ? {has: () => Android.hasKey(), set: k => Android.setKey(k)}
+  : {has: () => !!store.get('apikey', ''), set: k => store.set('apikey', k)};
+const canSpeak = ANDROID || 'speechSynthesis' in window;
+let zhVoice = null;
+function pickVoice(){
+  try{
+    const vs = speechSynthesis.getVoices();
+    zhVoice = vs.find(v=>/zh[-_]CN/i.test(v.lang)) || vs.find(v=>/^zh/i.test(v.lang) && !/HK|TW/i.test(v.lang)) || vs.find(v=>/^(zh|cmn)/i.test(v.lang)) || null;
+  }catch{}
+}
+if (canSpeak && !ANDROID){ pickVoice(); try{ speechSynthesis.addEventListener('voiceschanged', pickVoice); }catch{} }
+function say(text, btn){
+  if (!canSpeak || !text) return;
+  if (ANDROID){
+    try{ Android.speak(text); }catch{}
+    if (btn){ btn.classList.add('speaking'); setTimeout(() => btn.classList.remove('speaking'), 600 + 500*Array.from(text).length); }
+    return;
+  }
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'zh-CN'; if (zhVoice) u.voice = zhVoice; u.rate = 0.6;
+    if (btn){ btn.classList.add('speaking'); u.onend = u.onerror = () => btn.classList.remove('speaking'); }
+    speechSynthesis.speak(u);
+  }catch{}
+}
+function sayBtn(text, small){
+  const b = h('button', {class:'say'+(small?' sm':''), 'aria-label':'Say '+text, svg:SPEAKER});
+  b.addEventListener('click', e => { e.stopPropagation(); say(text, b); });
+  return b;
+}
+setTimeout(() => {
+  const n = $('voiceNote');
+  if (ANDROID){
+    let ok = false; try{ ok = Android.canSpeak(); }catch{}
+    if (!ok){
+      n.replaceChildren('No Chinese voice is installed on this phone, so words can’t be read aloud yet. ',
+        h('button',{class:'btn', style:'margin-top:6px', onclick:()=>{ try{ Android.openTtsSettings(); }catch{} }}, 'Open voice settings'),
+        h('p',{class:'sub'}, 'Choose Speech Services by Google, then Install voice data → Chinese (Mandarin). Restart the app afterwards.'));
+      n.hidden = false;
+    }
+  }
+  else if (!canSpeak){ n.textContent = 'This device can’t read aloud here, so use the pinyin to sound words out.'; n.hidden = false; }
+  else if (!zhVoice){ pickVoice(); if (!zhVoice){ n.textContent = 'No Chinese voice found on this device yet. If words sound wrong, add a Chinese (Mandarin) voice in your phone’s text-to-speech settings.'; n.hidden = false; } }
+}, 2500);
+
+/* ---------- stars ---------- */
+let stars = store.get('stars', 0);
+function renderStars(pop){ const s=$('stars'); s.textContent = '★ ' + stars; if(pop){ s.classList.remove('pop'); void s.offsetWidth; s.classList.add('pop'); } }
+function addStar(){ stars++; store.set('stars', stars); renderStars(true); }
+renderStars();
+
+/* ---------- tones ---------- */
+const MARKS = {a:'āáǎà',e:'ēéěè',i:'īíǐì',o:'ōóǒò',u:'ūúǔù','ü':'ǖǘǚǜ'};
+function addTone(base, t){
+  base = base.replace(/v/g,'ü');
+  let i = -1;
+  if (base.includes('a')) i = base.indexOf('a');
+  else if (base.includes('e')) i = base.indexOf('e');
+  else if (base.includes('ou')) i = base.indexOf('o');
+  else for (let k=base.length-1;k>=0;k--) if ('iouü'.includes(base[k])){ i=k; break; }
+  return i<0 ? base : base.slice(0,i) + MARKS[base[i]][t-1] + base.slice(i+1);
+}
+function toneOf(py){
+  for (const ch of py||''){ for (const v in MARKS){ const idx = MARKS[v].indexOf(ch); if (idx>=0) return idx+1; } }
+  return 0;
+}
+const toneColor = t => t ? `var(--t${t})` : 'var(--ink)';
+const CONTOUR = {1:'M5 7 L39 7', 2:'M5 20 L39 6', 3:'M5 12 C14 30 26 30 39 8', 4:'M5 6 L39 26'};
+const TONE_NAME = {1:'flat', 2:'goes up', 3:'down and up', 4:'goes down'};
+const contour = t => `<svg viewBox="0 0 44 32" aria-hidden="true"><path d="${CONTOUR[t]}" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/></svg>`;
+
+/* ---------- vocabulary ---------- */
+const CATS = [
+  {id:'animals', zh:'动物', en:'Animals'}, {id:'food', zh:'食物', en:'Food'},
+  {id:'family', zh:'家人', en:'People'}, {id:'nature', zh:'自然', en:'Nature'},
+  {id:'body', zh:'身体', en:'Body'}, {id:'colors', zh:'颜色', en:'Colors'},
+  {id:'numbers', zh:'数字', en:'Numbers'}, {id:'mine', zh:'我的', en:'From my book'}
+];
+const V = (cat, zh, py, en, e) => ({cat, zh, py, en, e});
+const VOCAB = [
+  V('animals','猫','māo','cat','🐱'), V('animals','狗','gǒu','dog','🐶'), V('animals','鱼','yú','fish','🐟'),
+  V('animals','鸟','niǎo','bird','🐦'), V('animals','马','mǎ','horse','🐴'), V('animals','牛','niú','cow','🐮'),
+  V('animals','羊','yáng','sheep','🐑'), V('animals','兔子','tùzi','rabbit','🐰'), V('animals','熊猫','xióngmāo','panda','🐼'),
+  V('food','苹果','píngguǒ','apple','🍎'), V('food','香蕉','xiāngjiāo','banana','🍌'), V('food','西瓜','xīguā','watermelon','🍉'),
+  V('food','米饭','mǐfàn','rice','🍚'), V('food','面条','miàntiáo','noodles','🍜'), V('food','水','shuǐ','water','💧'),
+  V('food','牛奶','niúnǎi','milk','🥛'), V('food','鸡蛋','jīdàn','egg','🥚'), V('food','饺子','jiǎozi','dumplings','🥟'),
+  V('family','妈妈','māma','mom','👩'), V('family','爸爸','bàba','dad','👨'), V('family','爷爷','yéye','grandpa','👴'),
+  V('family','奶奶','nǎinai','grandma','👵'), V('family','宝宝','bǎobao','baby','👶'), V('family','朋友','péngyou','friend','🧒'),
+  V('family','老师','lǎoshī','teacher','🧑‍🏫'), V('family','我','wǒ','me','🙋'), V('family','你','nǐ','you','👉'),
+  V('nature','日','rì','sun','☀️'), V('nature','月','yuè','moon','🌙'), V('nature','星星','xīngxing','star','⭐'),
+  V('nature','山','shān','mountain','⛰️'), V('nature','水','shuǐ','water','🌊'), V('nature','火','huǒ','fire','🔥'),
+  V('nature','花','huā','flower','🌸'), V('nature','树','shù','tree','🌳'), V('nature','雨','yǔ','rain','🌧️'),
+  V('body','口','kǒu','mouth','👄'), V('body','手','shǒu','hand','✋'), V('body','眼睛','yǎnjing','eyes','👀'),
+  V('body','耳朵','ěrduo','ear','👂'), V('body','鼻子','bízi','nose','👃'), V('body','脚','jiǎo','foot','🦶'),
+  V('colors','红色','hóngsè','red','🔴'), V('colors','黄色','huángsè','yellow','🟡'), V('colors','蓝色','lánsè','blue','🔵'),
+  V('colors','绿色','lǜsè','green','🟢'), V('colors','白色','báisè','white','⚪'), V('colors','黑色','hēisè','black','⚫'),
+  V('numbers','一','yī','one','1️⃣'), V('numbers','二','èr','two','2️⃣'), V('numbers','三','sān','three','3️⃣'),
+  V('numbers','四','sì','four','4️⃣'), V('numbers','五','wǔ','five','5️⃣'), V('numbers','六','liù','six','6️⃣'),
+  V('numbers','七','qī','seven','7️⃣'), V('numbers','八','bā','eight','8️⃣'), V('numbers','九','jiǔ','nine','9️⃣'),
+  V('numbers','十','shí','ten','🔟')
+];
+let mine = store.get('mine', []);
+function wordsFor(cat){ return cat==='mine' ? mine.map(m => ({...m, cat:'mine'})) : VOCAB.filter(v => v.cat===cat); }
+
+/* ---------- words view ---------- */
+let curCat = store.get('cat', 'animals');
+function renderCats(){
+  const box = $('cats'); box.replaceChildren();
+  for (const c of CATS){
+    box.append(h('button', {class:'chip', 'aria-pressed': String(c.id===curCat), onclick:()=>{ curCat=c.id; store.set('cat',c.id); renderCats(); renderWords(); }},
+      h('span',{class:'han'}, c.zh), h('small',{}, c.en)));
+  }
+}
+function renderWords(){
+  const g = $('wordGrid'); g.replaceChildren();
+  const list = wordsFor(curCat);
+  if (!list.length){
+    g.append(h('p',{class:'mine-empty', style:'grid-column:1/-1'}, 'Characters you tap in “My book” will be saved here.'));
+    return;
+  }
+  list.forEach((w,i) => g.append(h('button',{class:'word', onclick:()=>openWord(list,i)},
+    h('span',{class:'pic','aria-hidden':'true'}, w.e), h('span',{class:'han'}, w.zh),
+    h('span',{class:'py', style:`color:${toneColor(toneOf(w.py))}`}, w.py))));
+}
+function tzgRow(text, size){
+  return h('div',{class:'tzg-row'}, Array.from(text).map(c => h('div',{class:'tzg', style:`--s:${size}px`}, h('span',{}, c))));
+}
+function openWord(list, i){
+  const w = list[i];
+  const n = Array.from(w.zh).length;
+  const size = n>2 ? 92 : n===2 ? 120 : 150;
+  const sheet = $('sheet');
+  sheet.replaceChildren(
+    sheetTop(),
+    h('div',{class:'hero'},
+      h('div',{class:'pic','aria-hidden':'true'}, w.e),
+      tzgRow(w.zh, size),
+      h('div',{class:'pyl', style:`color:${toneColor(toneOf(w.py))}`}, w.py),
+      h('div',{class:'en'}, w.en),
+      sayBtn(w.zh)),
+    list.length>1 ? h('div',{class:'navrow'},
+      h('button',{class:'btn', onclick:()=>openWord(list,(i-1+list.length)%list.length)}, '‹ Back'),
+      h('button',{class:'btn primary', onclick:()=>openWord(list,(i+1)%list.length)}, 'Next ›')) : null
+  );
+  showSheet();
+  say(w.zh);
+}
+
+/* ---------- sheet ---------- */
+let sheetCtl = null;
+function sheetTop(label){ return h('div',{class:'sheet-top'}, h('span',{class:'tag'}, label||''), h('button',{class:'x','aria-label':'Close', onclick:closeSheet}, '×')); }
+function showSheet(){ $('scrim').hidden = false; $('sheet').scrollTop = 0; }
+function closeSheet(){
+  $('scrim').hidden = true;
+  if (sheetCtl){ sheetCtl.abort(); sheetCtl = null; }
+  document.querySelectorAll('.tile.sel').forEach(t => t.classList.remove('sel'));
+  try{ if (ANDROID) Android.stopSpeaking(); else speechSynthesis.cancel(); }catch{}
+}
+$('scrim').addEventListener('click', e => { if (e.target.id==='scrim') closeSheet(); });
+document.addEventListener('keydown', e => { if (e.key==='Escape' && !$('scrim').hidden) closeSheet(); });
+
+/* ---------- tone game ---------- */
+const TONE_ITEMS = [
+  ['猫','mao',1,'🐱','cat'],['鱼','yu',2,'🐟','fish'],['马','ma',3,'🐴','horse'],['大','da',4,'🐘','big'],
+  ['狗','gou',3,'🐶','dog'],['牛','niu',2,'🐮','cow'],['兔','tu',4,'🐰','rabbit'],['水','shui',3,'💧','water'],
+  ['山','shan',1,'⛰️','mountain'],['火','huo',3,'🔥','fire'],['花','hua',1,'🌸','flower'],['雨','yu',3,'🌧️','rain'],
+  ['手','shou',3,'✋','hand'],['月','yue',4,'🌙','moon'],['日','ri',4,'☀️','sun'],['一','yi',1,'1️⃣','one'],
+  ['二','er',4,'2️⃣','two'],['三','san',1,'3️⃣','three'],['五','wu',3,'5️⃣','five'],['八','ba',1,'8️⃣','eight'],
+  ['红','hong',2,'🔴','red'],['蓝','lan',2,'🔵','blue'],['白','bai',2,'⚪','white'],['小','xiao',3,'🐭','small'],
+  ['头','tou',2,'🙂','head'],['羊','yang',2,'🐑','sheep'],['鸟','niao',3,'🐦','bird'],['树','shu',4,'🌳','tree'],
+  ['蛋','dan',4,'🥚','egg'],['书','shu',1,'📕','book'],['茶','cha',2,'🍵','tea'],['飞','fei',1,'✈️','fly']
+];
+let toneDeck = [], toneDone = false;
+function nextTone(){
+  if (!toneDeck.length) toneDeck = shuffle(TONE_ITEMS);
+  const [zh, base, t, e, en] = toneDeck.pop();
+  toneDone = false;
+  const stage = $('toneStage');
+  const cheer = h('div',{class:'cheer', 'aria-live':'polite'});
+  const listen = h('button',{class:'say', style:'width:84px;height:84px', 'aria-label':'Listen again', svg:SPEAKER});
+  listen.onclick = () => say(zh, listen);
+  const grid = h('div',{class:'tones'});
+  for (let k=1;k<=4;k++){
+    const b = h('button',{class:'tone', style:`--tc:var(--t${k})`, 'aria-label': addTone(base,k)+', tone '+k},
+      h('b',{}, addTone(base,k)), h('span',{svg:contour(k)}), h('small',{}, `${k} · ${TONE_NAME[k]}`));
+    b.onclick = () => {
+      if (toneDone) return;
+      if (k===t){ toneDone = true; b.classList.add('right'); cheer.textContent = '真棒! Great listening!'; addStar(); say(zh); next.hidden = false; }
+      else { b.classList.remove('wrong'); void b.offsetWidth; b.classList.add('wrong'); cheer.textContent = 'Listen once more…'; say(zh, listen); }
+    };
+    grid.append(b);
+  }
+  const next = h('button',{class:'btn primary', hidden:true, onclick:nextTone}, 'Next one ›');
+  stage.replaceChildren(
+    h('div',{class:'big','aria-hidden':'true'}, e),
+    h('div',{class:'tzg', style:'--s:96px'}, h('span',{}, zh)),
+    h('div',{class:'prompt'}, `“${en}” — tap to listen`),
+    listen, grid, cheer, next);
+}
+
+/* ---------- match game ---------- */
+let matchDone = false;
+function nextMatch(){
+  const pool = VOCAB.filter((v,i,a) => a.findIndex(x=>x.e===v.e)===i);
+  const target = pool[Math.floor(Math.random()*pool.length)];
+  const others = shuffle(pool.filter(v => v.zh!==target.zh && v.e!==target.e)).slice(0,2);
+  const opts = shuffle([target, ...others]);
+  matchDone = false;
+  const n = Array.from(target.zh).length;
+  const cheer = h('div',{class:'cheer','aria-live':'polite'});
+  const pyLine = h('div',{class:'pyl', style:`font-size:24px;font-weight:800;color:${toneColor(toneOf(target.py))}`, hidden:true}, target.py);
+  const next = h('button',{class:'btn primary', hidden:true, onclick:nextMatch}, 'Next one ›');
+  const picks = h('div',{class:'picks'}, opts.map(o => {
+    const b = h('button',{class:'pick', 'aria-label':o.en}, o.e);
+    b.onclick = () => {
+      if (matchDone) return;
+      if (o===target){ matchDone=true; b.classList.add('right'); cheer.textContent = `对了! ${target.zh} means ${target.en}.`; pyLine.hidden=false; addStar(); say(target.zh); next.hidden=false; }
+      else { b.classList.remove('wrong'); void b.offsetWidth; b.classList.add('wrong'); cheer.textContent = `That one is ${o.en}. Try again!`; }
+    };
+    return b;
+  }));
+  const hint = h('button',{class:'btn', onclick:()=>{ say(target.zh); pyLine.hidden=false; }}, 'Hint: hear it');
+  $('matchStage').replaceChildren(tzgRow(target.zh, n>1?96:130), pyLine, picks, cheer, hint, next);
+}
+
+/* ---------- Claude (book reader) ---------- */
+let sample = null, sampleState = 'loading', imgOK = false, imgTypes = '';
+const BLOCKING = ['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'];
+function errCopy(e){
+  switch (e && e.code){
+    case 'not_granted': return 'Claude wasn’t allowed for this page. Reload the page and tap Allow to use the book reader.';
+    case 'sampling_disabled': case 'capability_disabled': case 'not_declared': case 'capability_removed': return 'Claude isn’t available in this view.';
+    case 'images_unavailable': return 'This view can’t send photos to Claude.';
+    case 'image_rejected': return 'That photo didn’t work. Try a clearer JPG or PNG photo.';
+    case 'rate_limited': return 'Lots of questions at once. Wait a minute, then try again.';
+    case 'session_expired': return 'Please sign in to Claude again, then try again.';
+    case 'invalid_json': case 'empty_completion': return 'Claude got a bit muddled. Please try again.';
+    case 'refused': return 'Claude couldn’t help with that. Try a different page.';
+    case 'bad_key': return 'That API key didn’t work. Check it in the Claude API key box at the bottom of this page.';
+    case 'billing': return 'Your Anthropic account is out of credit. Add credit at console.anthropic.com, then try again.';
+    case 'offline': return 'No internet connection. Connect to Wi-Fi or data and try again.';
+    case 'overloaded': return 'Claude is very busy right now. Try again in a minute.';
+    default: return 'Something went wrong. Check the connection and try again.';
+  }
+}
+function noteBlocking(e){ if (e && BLOCKING.includes(e.code)){ sampleState='off'; updateBookUI(); } }
+/* On Android, Claude is reached through the app with the parent's own API key. */
+const MODEL = 'claude-sonnet-5-5';
+function makeNativeSample(){
+  const pending = {}; let seq = 0;
+  window.__claudeDone = (id, status, body) => { const f = pending[id]; if (f){ delete pending[id]; f(status, body); } };
+  function httpErr(status, body){
+    let msg = ''; try{ msg = JSON.parse(body).error.message || ''; }catch{}
+    const code = status===0 ? 'offline' : (status===401 || status===403) ? 'bad_key' : status===429 ? 'rate_limited'
+      : status===529 ? 'overloaded' : (status===400 && /credit|billing|balance/i.test(msg)) ? 'billing' : 'upstream_error';
+    return {code, message: msg || String(body).slice(0,200)};
+  }
+  async function webCall(req, signal){
+    let r;
+    try{
+      r = await fetch('https://api.anthropic.com/v1/messages', {method:'POST', signal, body: JSON.stringify(req), headers:{
+        'content-type':'application/json', 'x-api-key': store.get('apikey', ''), 'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'}});
+    }catch(e){ throw (e && e.name === 'AbortError') ? {code:'cancelled'} : {code:'offline'}; }
+    const body = await r.text();
+    if (!r.ok) throw httpErr(r.status, body);
+    return body;
+  }
+  function call(req, signal){
+    if (!ANDROID) return webCall(req, signal);
+    return new Promise((resolve, reject) => {
+      if (signal && signal.aborted) return reject({code:'cancelled'});
+      const id = 'c' + (++seq);
+      pending[id] = (status, body) => status>=200 && status<300 ? resolve(body) : reject(httpErr(status, body));
+      if (signal) signal.addEventListener('abort', () => { if (pending[id]){ delete pending[id]; reject({code:'cancelled'}); } });
+      try{ Android.callClaude(id, JSON.stringify(req)); }catch(e){ delete pending[id]; reject({code:'upstream_error', message:String(e)}); }
+    });
+  }
+  function toJpegBase64(file){
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const max = 1568, s = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+        const cv = document.createElement('canvas');
+        cv.width = Math.round(img.naturalWidth*s); cv.height = Math.round(img.naturalHeight*s);
+        cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+        URL.revokeObjectURL(url);
+        resolve(cv.toDataURL('image/jpeg', 0.85).split(',')[1]);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject({code:'image_rejected'}); };
+      img.src = url;
+    });
+  }
+  function parseLoose(t){
+    t = String(t||'').trim();
+    try{ return JSON.parse(t); }catch{}
+    const fence = t.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (fence){ try{ return JSON.parse(fence[1]); }catch{} }
+    const a = t.search(/[\[{]/), b = Math.max(t.lastIndexOf('}'), t.lastIndexOf(']'));
+    if (a>=0 && b>a){ try{ return JSON.parse(t.slice(a, b+1)); }catch{} }
+    throw {code:'invalid_json'};
+  }
+  return {
+    async limits(){ return {images:{maxCount:1, mediaTypes:['image/jpeg','image/png','image/webp']}}; },
+    async json(prompt, opts){
+      opts = opts || {};
+      const content = [];
+      if (opts.images){
+        const file = opts.images instanceof Blob ? opts.images : opts.images[0];
+        content.push({type:'image', source:{type:'base64', media_type:'image/jpeg', data: await toJpegBase64(file)}});
+      }
+      if (opts.signal && opts.signal.aborted) throw {code:'cancelled'};
+      content.push({type:'text', text: prompt + '\n\nReply with the JSON only, with no other text.'});
+      const raw = await call({model: MODEL, max_tokens: opts.images ? 4000 : 1500, messages:[{role:'user', content}]}, opts.signal);
+      let resp; try{ resp = JSON.parse(raw); }catch{ throw {code:'upstream_error'}; }
+      const text = (resp.content||[]).filter(b => b.type==='text').map(b => b.text).join('');
+      if (!text.trim()) throw {code:'empty_completion'};
+      return parseLoose(text);
+    }
+  };
+}
+function setupKeyBox(){
+  $('keyBox').hidden = false;
+  const show = () => { $('keyStatus').textContent = keyStore.has() ? 'A key is saved on this phone.' : 'No key saved yet.'; };
+  $('keySave').onclick = () => {
+    const v = $('keyIn').value.trim();
+    if (!v){ $('keyStatus').textContent = 'Paste the key into the box first.'; return; }
+    keyStore.set(v); $('keyIn').value = ''; sampleState = 'ready'; updateBookUI(); show();
+    $('keyStatus').textContent = 'Key saved. Take a photo to try it.';
+  };
+  $('keyClear').onclick = () => { keyStore.set(''); sampleState = 'nokey'; updateBookUI(); show(); };
+  show();
+}
+(async () => {
+  await Promise.resolve(); // let the rest of the script finish setting up first
+  if (ANDROID || WEB){
+    sample = makeNativeSample(); imgOK = true;
+    sampleState = keyStore.has() ? 'ready' : 'nokey';
+    setupKeyBox(); updateBookUI();
+    return;
+  }
+  try { sample = window.claude && window.claude.use ? await window.claude.use('sample') : null; } catch { sample = null; }
+  if (sample){
+    sampleState = 'ready';
+    try { const l = await sample.limits(); imgOK = !!(l && l.images); if (imgOK) imgTypes = (l.images.mediaTypes||[]).join(','); } catch { imgOK = false; }
+  } else sampleState = 'off';
+  updateBookUI();
+})();
+
+let photoFile = null, reading = false, readCtl = null;
+function setStatus(msg, err){ const s=$('bookStatus'); s.textContent = msg||''; s.classList.toggle('err', !!err); }
+function updateBookUI(){
+  const canPhoto = sampleState==='ready' && imgOK;
+  $('camLbl').classList.toggle('off', !canPhoto);
+  $('pickLbl').classList.toggle('off', !canPhoto);
+  $('cam').disabled = $('pick').disabled = !canPhoto;
+  if (imgTypes){ $('cam').accept = imgTypes; $('pick').accept = imgTypes; }
+  $('readBtn').disabled = !(canPhoto && photoFile && !reading);
+  if (reading) return;
+  if (sampleState==='nokey') setStatus('To read photos, a grown-up needs to add a Claude API key in the box at the bottom of this page.', true);
+  else if (sampleState==='loading') setStatus('Connecting to Claude…');
+  else if (sampleState==='off') setStatus('Reading photos and explaining characters needs Claude. Open this page in the Claude app and tap Allow when asked. The other games work without it.', true);
+  else if (!imgOK) setStatus('This view can’t send photos to Claude, but you can still tap the example page below.');
+  else if (!photoFile) setStatus('Take a photo of one page, then tap Read my page.');
+  else setStatus('Photo ready. Tap Read my page.');
+}
+function onPhoto(e){
+  const f = e.target.files && e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  photoFile = f;
+  const url = URL.createObjectURL(f);
+  $('photo').replaceChildren(h('img',{src:url, alt:'Photo of the textbook page'}));
+  updateBookUI();
+}
+$('cam').addEventListener('change', onPhoto);
+$('pick').addEventListener('change', onPhoto);
+
+const OCR_PROMPT = `The attached photo shows a page from a young child's Chinese textbook.
+Transcribe every line of Chinese text on the page, in reading order. Keep the characters exactly as printed (simplified or traditional) and keep Chinese punctuation. Ignore page numbers, English, and any pinyin printed above the characters. Split long passages into one entry per sentence or printed line.
+For each line also give the Mandarin pinyin with tone marks for every character, as an array with exactly one entry per character of the line (in order), using an empty string "" for each punctuation mark or digit. Use the reading that fits the sentence.
+Also give a short, simple English translation of each line that a young child can understand.
+Reply with only JSON in this shape:
+{"lines":[{"zh":"小猫钓鱼。","pinyin":["xiǎo","māo","diào","yú",""],"en":"The kitten goes fishing."}]}
+If there is no Chinese text, reply {"lines":[]}.`;
+
+$('readBtn').addEventListener('click', async () => {
+  if (!sample || !photoFile || reading) return;
+  reading = true; readCtl = new AbortController();
+  $('stopRow').hidden = false; updateBookUI();
+  setStatus('Claude is reading the page… this can take up to a minute.');
+  try{
+    const data = await sample.json(OCR_PROMPT, {images: photoFile, signal: readCtl.signal});
+    const lines = cleanLines(data);
+    if (!lines.length){ setStatus('No Chinese text found. Try a closer, brighter photo.', true); }
+    else { renderLines(lines, 'Your page'); setStatus(`Found ${lines.length} line${lines.length>1?'s':''}. Tap a character to learn it.`); $('lines').scrollIntoView({behavior:'smooth', block:'start'}); }
+  }catch(e){
+    if (e && e.code==='cancelled') setStatus('Stopped.');
+    else { setStatus(errCopy(e), true); noteBlocking(e); }
+  }finally{
+    reading = false; readCtl = null; $('stopRow').hidden = true;
+    $('readBtn').disabled = !(sampleState==='ready' && imgOK && photoFile);
+  }
+});
+$('stopBtn').addEventListener('click', () => readCtl && readCtl.abort());
+
+function cleanLines(data){
+  const arr = Array.isArray(data) ? data : (data && Array.isArray(data.lines) ? data.lines : []);
+  return arr.map(l => {
+    if (typeof l === 'string') return {zh:l, pinyin:null, en:''};
+    if (!l || typeof l.zh !== 'string') return null;
+    return {zh:l.zh.trim(), pinyin: Array.isArray(l.pinyin) ? l.pinyin.map(p => typeof p==='string' ? p : '') : null, en: typeof l.en === 'string' ? l.en.trim() : ''};
+  }).filter(l => l && l.zh);
+}
+
+/* page rendering */
+const EXAMPLE = [
+  {zh:'小猫和妈妈去河边钓鱼。', pinyin:['xiǎo','māo','hé','mā','ma','qù','hé','biān','diào','yú',''], en:'The kitten and its mom go fishing by the river.'},
+  {zh:'一只蜻蜓飞来了，', pinyin:['yì','zhī','qīng','tíng','fēi','lái','le',''], en:'A dragonfly flew over,'},
+  {zh:'小猫放下鱼竿去捉蜻蜓。', pinyin:['xiǎo','māo','fàng','xià','yú','gān','qù','zhuō','qīng','tíng',''], en:'so the kitten put down its fishing rod to catch the dragonfly.'}
+];
+let showPy = store.get('py', true);
+function applyPy(){ $('lines').classList.toggle('nopy', !showPy); const b=$('pyToggle'); b.textContent = showPy ? 'Pinyin on' : 'Pinyin off'; b.setAttribute('aria-pressed', String(showPy)); }
+$('pyToggle').addEventListener('click', () => { showPy = !showPy; store.set('py', showPy); applyPy(); });
+let showEn = store.get('en', true);
+function applyEn(){ $('lines').classList.toggle('noen', !showEn); const b=$('enToggle'); b.textContent = showEn ? 'English on' : 'English off'; b.setAttribute('aria-pressed', String(showEn)); }
+$('enToggle').addEventListener('click', () => { showEn = !showEn; store.set('en', showEn); applyEn(); });
+applyEn();
+
+function renderLines(lines, label){
+  $('pageTag').textContent = label;
+  endSel();
+  $('lines').replaceChildren(...lines.map(lineEl));
+  applyPy();
+}
+function lineEl(line){
+  {
+    const chars = Array.from(line.zh);
+    const py = line.pinyin && line.pinyin.length===chars.length ? line.pinyin : null;
+    const tiles = h('div',{class:'line-tiles'});
+    chars.forEach((c,i) => {
+      if (!isHan(c)){ if (c.trim()) tiles.append(h('span',{class:'punct','aria-hidden':'true','data-ch':c}, c)); return; }
+      const p = py ? py[i] : '';
+      const t = h('button',{class:'tile','data-ch':c,'aria-label':c+(p?' '+p:'')},
+        h('span',{class:'py', style:`color:${toneColor(toneOf(p))}`}, p),
+        h('div',{class:'tzg'}, h('span',{}, c)));
+      t.onclick = () => {
+        if (t._lp){ t._lp = false; return; }          // the long press already handled this touch
+        if (sel){ extendSel(t); return; }             // while selecting, taps stretch the selection
+        document.querySelectorAll('.tile.sel').forEach(x=>x.classList.remove('sel')); t.classList.add('sel'); lookup(c, line.zh, p);
+      };
+      longPress(t, () => { if (sel && sel.box === t.closest('.lines')) extendSel(t); else startSel(t); });
+      tiles.append(t);
+    });
+    return h('div',{class:'line'},
+      h('div',{class:'line-main'}, tiles, line.en ? h('div',{class:'line-en'}, line.en) : null),
+      sayBtn(line.zh, true));
+  }
+}
+
+/* character lookup */
+function lookupPrompt(c, line){
+  return `A 5-year-old girl learning Mandarin tapped the character "${c}" in this sentence from her Chinese textbook:
+"${line}"
+Explain the character for her. Use the reading of "${c}" that fits this sentence. Keep everything very simple and cheerful, for a child aged 4 to 7.
+Most important: give the single MOST COMMON everyday word or phrase that uses "${c}" — the one a child hears most often (for example 见 → 再见 "goodbye", 好 → 你好 "hello", 谢 → 谢谢 "thank you"). If the character is mostly used on its own, use it on its own. Explain in one short sentence what "${c}" adds to that word's meaning, and give one very short example sentence using that word.
+Reply with only JSON in this shape:
+{"char":"${c}","pinyin":"pinyin with tone mark","meaning":"simple English meaning, at most 6 words","emoji":"one emoji that pictures the meaning","common":{"zh":"most common word using the character","pinyin":"pinyin with tone marks","en":"English meaning","emoji":"one emoji","how":"one short English sentence, e.g. 见 means 'see', so 再见 means 'see you again' = goodbye","example":{"zh":"short sentence using the word","pinyin":"pinyin with tone marks","en":"English"}},"tip":"one short, fun English sentence that helps a small child remember this character (for example what the shape looks like)","words":[{"zh":"common word using the character","pinyin":"pinyin with tone marks","en":"English","emoji":"one emoji"}],"sentences":[{"zh":"very short simple sentence using the character, 4 to 8 characters","pinyin":"pinyin with tone marks","en":"English","emoji":"one emoji"}],"line":{"pinyin":"pinyin with tone marks for the whole textbook sentence","en":"simple, natural English translation of the whole textbook sentence"}}
+Give 3 more words (different from the common word) and 2 sentences. Use simplified characters unless the textbook sentence uses traditional ones.`;
+}
+async function lookup(c, line, hintPy){
+  const sheet = $('sheet');
+  if (sheetCtl){ sheetCtl.abort(); sheetCtl = null; }
+  const head = h('div',{class:'hero'},
+    tzgRow(c, 150),
+    hintPy ? h('div',{class:'pyl', style:`color:${toneColor(toneOf(hintPy))}`}, hintPy) : null,
+    sayBtn(c));
+  if (sampleState!=='ready' || !sample){
+    sheet.replaceChildren(sheetTop('From my book'), head, h('p',{class:'note'}, sampleState==='loading' ? 'Still connecting to Claude. Try again in a moment.' : sampleState==='nokey' ? 'To explain characters, a grown-up needs to add a Claude API key at the bottom of the My book page.' : 'Explaining characters needs Claude. Open this page in the Claude app and tap Allow when asked.'));
+    showSheet(); say(c); return;
+  }
+  const wait = h('div',{class:'hero'}, h('div',{class:'spinner','aria-hidden':'true'}), h('div',{class:'prompt'}, 'Claude is finding words and pictures…'));
+  sheet.replaceChildren(sheetTop('From my book'), head, wait);
+  showSheet(); say(c);
+  const ctl = new AbortController(); sheetCtl = ctl;
+  try{
+    const d = await sample.json(lookupPrompt(c, line), {signal: ctl.signal, effort:'low'});
+    if (ctl.signal.aborted) return;
+    sheetCtl = null;
+    renderLookup(c, line, d);
+  }catch(e){
+    if (e && e.code==='cancelled') return;
+    sheetCtl = null;
+    noteBlocking(e);
+    wait.replaceChildren(h('p',{class:'status err'}, errCopy(e)),
+      BLOCKING.includes(e && e.code) ? null : h('button',{class:'btn primary', onclick:()=>lookup(c, line, hintPy)}, 'Try again'));
+  }
+}
+const str = v => typeof v === 'string' ? v : '';
+function exRow(x){
+  const zh = str(x && x.zh); if (!zh) return null;
+  return h('div',{class:'ex'},
+    str(x.emoji) ? h('div',{class:'pic','aria-hidden':'true'}, str(x.emoji)) : null,
+    h('div',{class:'txt'}, h('div',{class:'zh'}, zh), h('div',{class:'p'}, str(x.pinyin)), h('div',{class:'e'}, str(x.en))),
+    sayBtn(zh, true));
+}
+function renderLookup(c, line, d){
+  d = d && typeof d === 'object' ? d : {};
+  const py = str(d.pinyin), em = str(d.emoji), meaning = str(d.meaning);
+  const cm = d.common && typeof d.common === 'object' ? d.common : null;
+  let commonCard = null;
+  if (cm && str(cm.zh)){
+    const cz = str(cm.zh);
+    const ex = cm.example && typeof cm.example === 'object' ? cm.example : null;
+    commonCard = h('div',{class:'common'},
+      h('div',{class:'top'},
+        h('div',{class:'pic','aria-hidden':'true'}, str(cm.emoji)),
+        h('div',{class:'txt'},
+          h('div',{class:'zh'}, Array.from(cz).map(ch => ch===c ? h('span',{class:'hit'}, ch) : ch)),
+          h('div',{class:'p', style:`color:${toneColor(toneOf(str(cm.pinyin)))}`}, str(cm.pinyin)),
+          h('div',{class:'e'}, str(cm.en))),
+        sayBtn(cz)),
+      str(cm.how) ? h('div',{class:'how'}, str(cm.how)) : null,
+      ex && str(ex.zh) ? exRow({zh:str(ex.zh), pinyin:str(ex.pinyin), en:str(ex.en), emoji:'💬'}) : null);
+  }
+  const words = (Array.isArray(d.words) ? d.words : []).filter(w => !cm || str(w && w.zh) !== str(cm.zh)).slice(0,3).map(exRow).filter(Boolean);
+  const sents = (Array.isArray(d.sentences) ? d.sentences : []).slice(0,3).map(exRow).filter(Boolean);
+  // save to "From my book"
+  if (!mine.some(m => m.zh===c)){
+    mine.unshift({zh:c, py, en: meaning + (cm && str(cm.zh) ? ' · ' + str(cm.zh) : ''), e:em||'📖'}); mine = mine.slice(0,60); store.set('mine', mine);
+    if (curCat==='mine') renderWords();
+  }
+  $('sheet').replaceChildren(
+    sheetTop('From my book'),
+    h('div',{class:'hero'},
+      em ? h('div',{class:'pic','aria-hidden':'true'}, em) : null,
+      tzgRow(c, 150),
+      py ? h('div',{class:'pyl', style:`color:${toneColor(toneOf(py))}`}, py) : null,
+      meaning ? h('div',{class:'en'}, meaning) : null,
+      sayBtn(c)),
+    commonCard ? h('div',{class:'sec'}, 'Most common use') : null, commonCard,
+    str(d.tip) ? h('div',{class:'tip'}, str(d.tip)) : null,
+    words.length ? h('div',{class:'sec'}, 'More words with ' + c) : null, ...words,
+    sents.length ? h('div',{class:'sec'}, 'Say it in a sentence') : null, ...sents,
+    h('div',{class:'sec'}, 'In the sentence'),
+    exRow({zh:line, pinyin: str(d.line && d.line.pinyin), en: str(d.line && d.line.en), emoji:'📖'}),
+    h('p',{class:'sub'}, 'Saved to Words → From my book.')
+  );
+}
+
+/* ---------- select & copy (long-press a character) ---------- */
+let sel = null; // {box, a, b}
+const selItems = box => Array.from(box.querySelectorAll('[data-ch]'));
+function selString(){
+  if (!sel) return '';
+  const items = selItems(sel.box), lo = Math.min(sel.a, sel.b), hi = Math.max(sel.a, sel.b);
+  return items.slice(lo, hi+1).map(e => e.dataset.ch).join('');
+}
+function paintSel(){
+  document.querySelectorAll('.picked').forEach(e => e.classList.remove('picked'));
+  if (!sel || !sel.box.isConnected){ sel = null; $('selBar').hidden = true; return; }
+  const items = selItems(sel.box), lo = Math.min(sel.a, sel.b), hi = Math.max(sel.a, sel.b);
+  items.slice(lo, hi+1).forEach(e => e.classList.add('picked'));
+  const t = selString(), n = Array.from(t).filter(isHan).length;
+  $('selText').textContent = t;
+  $('selCount').textContent = n === 1 ? '1 character' : n + ' characters';
+  $('selBar').hidden = false;
+}
+function startSel(el){
+  const box = el.closest('.lines'); if (!box) return;
+  const i = selItems(box).indexOf(el);
+  sel = {box, a:i, b:i}; paintSel();
+  try{ navigator.vibrate && navigator.vibrate(15); }catch{}
+}
+function extendSel(el){
+  const box = el.closest('.lines');
+  if (!sel || box !== sel.box){ startSel(el); return; }
+  sel.b = selItems(box).indexOf(el); paintSel();
+}
+function endSel(){ sel = null; paintSel(); }
+function longPress(el, onLong){
+  let timer = null, sx = 0, sy = 0;
+  const cancel = () => clearTimeout(timer);
+  el.addEventListener('pointerdown', e => {
+    el._lp = false; sx = e.clientX; sy = e.clientY; cancel();
+    timer = setTimeout(() => { el._lp = true; onLong(); }, 450);
+  });
+  el.addEventListener('pointermove', e => { if (Math.abs(e.clientX-sx) > 10 || Math.abs(e.clientY-sy) > 10) cancel(); });
+  ['pointerup','pointercancel','pointerleave'].forEach(t => el.addEventListener(t, cancel));
+  el.addEventListener('contextmenu', e => e.preventDefault());
+}
+let toastTimer = null;
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2000);
+}
+async function copyText(t){
+  if (window.Android && window.Android.copyText){ try{ window.Android.copyText(t); return true; }catch{} }
+  try{ await navigator.clipboard.writeText(t); return true; }catch{}
+  try{
+    const ta = h('textarea',{style:'position:fixed;top:0;left:0;opacity:0'}); ta.value = t;
+    document.body.append(ta); ta.select(); const ok = document.execCommand('copy'); ta.remove(); return ok;
+  }catch{ return false; }
+}
+$('selCopy').addEventListener('click', async () => {
+  const t = selString(); if (!t) return;
+  const ok = await copyText(t);
+  if (ok){ toast('Copied ' + (t.length > 12 ? t.slice(0,12) + '…' : t)); endSel(); }
+  else toast('Couldn’t copy here. Press and hold the text in the dark bar to copy it.');
+});
+$('selAll').addEventListener('click', () => { if (!sel) return; sel.a = 0; sel.b = selItems(sel.box).length - 1; paintSel(); });
+$('selCancel').addEventListener('click', endSel);
+
+/* ---------- translate ---------- */
+let trDir = store.get('trdir', 'en2zh'), trCtl = null;
+function setTr(m, err){ const s = $('trStatus'); s.textContent = m || ''; s.classList.toggle('err', !!err); }
+function applyDir(){
+  const en = trDir === 'en2zh';
+  $('fromLang').textContent = en ? 'English' : '中文 Chinese';
+  $('toLang').textContent = en ? '中文 Chinese' : 'English';
+  $('trIn').placeholder = en ? 'e.g. I love my cat' : '例如：我爱我的小猫';
+  $('trIn').classList.toggle('zh', !en);
+}
+$('swapBtn').addEventListener('click', () => { trDir = trDir === 'en2zh' ? 'zh2en' : 'en2zh'; store.set('trdir', trDir); applyDir(); });
+$('trClear').addEventListener('click', () => { $('trIn').value = ''; $('trOut').hidden = true; setTr(''); });
+function trPrompt(text){
+  const toZh = trDir === 'en2zh';
+  return `Translate this ${toZh ? 'English' : 'Chinese'} text for a young child (age 4 to 7) who is learning Mandarin. ${toZh ? 'Translate it into simple, natural simplified Chinese, the way a child would say it.' : 'Translate it into simple, natural English.'}
+Text: """${text}"""
+Reply with only JSON in this shape:
+{"zh":"the Chinese text (the translation, or the original if the text was Chinese)","pinyin":["one pinyin syllable with tone mark for each character of zh, in order; use an empty string for each punctuation mark or non-Chinese character"],"en":"the English text (the translation, or the original if the text was English)","words":[{"zh":"one word of the Chinese text","pinyin":"its pinyin with tone marks","en":"its English meaning"}]}
+In "words", list the words of the Chinese text in order, skipping punctuation, at most 12.`;
+}
+$('trBtn').addEventListener('click', async () => {
+  const text = $('trIn').value.trim();
+  if (!text){ setTr('Type something to translate first.', true); return; }
+  if (sampleState !== 'ready' || !sample){
+    setTr(sampleState === 'nokey' ? 'To translate, a grown-up needs to add a Claude API key at the bottom of the My book page.'
+      : sampleState === 'loading' ? 'Still connecting to Claude. Try again in a moment.'
+      : 'Translating needs Claude. Open this page in the Claude app and tap Allow when asked.', true);
+    return;
+  }
+  if (trCtl) trCtl.abort();
+  const ctl = trCtl = new AbortController();
+  $('trBtn').disabled = true; setTr('Translating…');
+  try{
+    const d = await sample.json(trPrompt(text.slice(0, 1000)), {signal: ctl.signal});
+    setTr(''); renderTr(d);
+  }catch(e){
+    if (e && e.code !== 'cancelled'){ setTr(errCopy(e), true); noteBlocking(e); }
+  }finally{
+    if (trCtl === ctl) trCtl = null;
+    $('trBtn').disabled = false;
+  }
+});
+function renderTr(d){
+  d = d && typeof d === 'object' ? d : {};
+  const zh = str(d.zh).trim(), en = str(d.en).trim();
+  if (!zh){ setTr('Claude got a bit muddled. Please try again.', true); return; }
+  const lines = h('div',{class:'lines'}, lineEl({zh, pinyin: Array.isArray(d.pinyin) ? d.pinyin.map(p => typeof p === 'string' ? p : '') : null}));
+  if (!showPy) lines.classList.add('nopy');
+  const words = (Array.isArray(d.words) ? d.words : []).slice(0, 12)
+    .map(w => exRow({zh: str(w && w.zh), pinyin: str(w && w.pinyin), en: str(w && w.en), emoji: ''})).filter(Boolean);
+  const out = $('trOut');
+  out.replaceChildren(
+    h('div',{class:'sec'}, 'In Chinese'), lines,
+    en ? h('div',{class:'sec'}, 'In English') : null, en ? h('div',{class:'tip bigen'}, en) : null,
+    words.length ? h('div',{class:'sec'}, 'Word by word') : null, ...words);
+  out.hidden = false;
+}
+applyDir();
+
+/* ---------- navigation ---------- */
+const views = ['words','tones','match','book','translate'];
+let started = {};
+function show(v){
+  if (!views.includes(v)) v = 'words';
+  endSel();
+  views.forEach(x => $('v-'+x).hidden = x!==v);
+  document.querySelectorAll('nav button').forEach(b => { if (b.dataset.view===v) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
+  store.set('view', v);
+  if (v==='tones' && !started.tones){ started.tones = true; nextTone(); }
+  if (v==='match' && !started.match){ started.match = true; nextMatch(); }
+  if (v==='words') renderWords();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => show(b.dataset.view)));
+
+renderCats(); renderWords(); renderLines(EXAMPLE, 'Example page');
+show(store.get('view','words'));
+
+/* Android back button: close the open card first, then go back to Words, then leave the app. */
+window.__onBack = () => {
+  if (sel){ endSel(); return true; }
+  if (!$('scrim').hidden){ closeSheet(); return true; }
+  if ($('v-words').hidden){ show('words'); return true; }
+  return false;
+};
+</script>
+</body>
+</html>
